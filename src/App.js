@@ -1,16 +1,22 @@
 import React, { Component } from "react";
 import CardList from "./CardList";
 import SearchBox from "./SearchBox";
-import { robots } from "./robots";
+import Scroll from "./Scroll";
 import './App.css';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-      robots: robots,
+      robots: [],
       seacrchfield: ""
     };
+  }
+
+  componentDidMount() {
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response => response.json())
+    .then(users => {this.setState({robots: users})});
   }
 
   onSearchChange = (event) => {
@@ -24,6 +30,9 @@ class App extends Component {
       .includes(this.state.seacrchfield.toLowerCase());
     });
 
+    if (this.state.robots.length === 0)
+      return <h1>Loading</h1>
+      
     return (
       <div className="tc">
         <h1 className="f2">RoboFriends</h1>
@@ -31,7 +40,9 @@ class App extends Component {
           seacrchfield={this.state.seacrchfield}
           searchChange={this.onSearchChange}
         />
-        <CardList robots={filteredRobots} />
+        <Scroll>
+          <CardList robots={filteredRobots} />
+        </Scroll>
       </div>
     );
   }
